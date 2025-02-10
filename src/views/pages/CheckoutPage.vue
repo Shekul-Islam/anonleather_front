@@ -809,7 +809,7 @@ const checkScreenSize = () => {
   transition: .3s ease-in-out;
   font-weight: 500;
   font-size: 23px;
-  animation: pulse 1s infinite; 
+  animation: pulse 2s infinite; 
 }
 .orderBTN:hover{
   background-color: var(--secondary-color);

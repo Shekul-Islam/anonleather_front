@@ -151,6 +151,7 @@ const getProducts = () => {
   );
 };
 
+
 function clearFilter(data) {
   if (data == "brand") {
     selectedBrandIds.value = [];
@@ -279,9 +280,9 @@ onMounted(() => {
                   <ul class="shop-widget-list shop-widget-scroll">
                     <li v-for="(attributeValue, attributeValueIndex) in getAttributeData.attribute_values" :key="attributeValueIndex">
                       <div class="shop-widget-content">
-                        <input type="checkbox" :id="`cate${attributeValueIndex}`" :value="attributeValue.id" @change="getProducts()"
+                        <input type="checkbox" :id="`cate-${getAttributeData.id}-${attributeValueIndex}`" :value="attributeValue.id" @change="getProducts()"
                           v-model="selectedAttributeIds"/>
-                        <label :for="`cate${attributeValueIndex}`">{{ attributeValue.value }}</label>
+                        <label :for="`cate-${getAttributeData.id}-${attributeValueIndex}`">{{ attributeValue.value }}</label>
                       </div>
                       <span class="shop-widget-number">({{ attributeValue.products_count }})</span>
                     </li>
@@ -305,9 +306,9 @@ onMounted(() => {
                   <ul class="shop-widget-list shop-widget-scroll">
                     <li v-for="(category, index) in searchCategories" :key="index">
                       <div class="shop-widget-content">
-                        <input type="checkbox" :id="`cate${index}`" :value="category.slug" @change="getProducts"
+                        <input type="checkbox" :id="`cate-${searchCategories.id}-${index}`" :value="category.slug" @change="getProducts"
                           v-model="selectedCategoryIds" />
-                        <label :for="`cate${index}`">{{ category.name }}</label>
+                        <label :for="`cate-${searchCategories.id}-${index}`">{{ category.name }}</label>
                       </div>
                       <span class="shop-widget-number">({{ category.products_count }})</span>
                     </li>
@@ -331,9 +332,9 @@ onMounted(() => {
                   <TransitionGroup tag="ul" class="shop-widget-list shop-widget-scroll">
                     <li v-for="(brand, index) in searchBrands" :key="brand.id">
                       <div class="shop-widget-content">
-                        <input type="checkbox" :id="`brand${index}`" :value="brand.id" v-model="selectedBrandIds"
+                        <input type="checkbox" :id="`brand-${searchBrands.id}-${index}`" :value="brand.id" v-model="selectedBrandIds"
                           @change="getProducts" />
-                        <label :for="`brand${index}`">{{ brand.name }}</label>
+                        <label :for="`brand-${searchBrands.id}-${index}`">{{ brand.name }}</label>
                       </div>
                       <span class="shop-widget-number">({{ brand.products_count }})</span>
                     </li>

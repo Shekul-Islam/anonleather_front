@@ -51,14 +51,16 @@ const setting       = useSetting();
 const productVariations     = ref([]);
 const activeBtns            = ref(false);
 const productVariationPrice = ref();
-const productVariationData = ref();
+const productVariationData  = ref();
 // product variations end
 
 // Setting data start
-const websiteUrl  = ref("");
-const phone       = ref("");
-const whatsapp    = ref("");
-const messengerId = ref("");
+const websiteUrl            = ref("");
+const phone                 = ref("");
+const whatsapp              = ref("");
+const messengerId           = ref("");
+const whatsappText          = ref("");
+const phoneText             = ref("");
 // Setting data end
 // related product start
 const relatedProducts = ref("");
@@ -100,8 +102,14 @@ const getSettingsData = async () => {
     if (ele.key == "phone_number") {
       phone.value = ele;
     }
+    if (ele.key == "phone_text") {
+      phoneText.value = ele;
+    }
     if (ele.key == "whatsapp_number") {
       whatsapp.value = ele;
+    }
+    if (ele.key == "whatsapp_text") {
+      whatsappText.value = ele;      
     }
     if (ele.key == "website_url") {
       websiteUrl.value = ele;
@@ -112,6 +120,33 @@ const getSettingsData = async () => {
   });
 };
 // setting data end
+
+const socialIcons = (socialType) => {
+  const iconMapping = {
+    Facebook: "fab fa-facebook-f",
+    Twitter: "fab fa-twitter",
+    Whatsapp: "fab fa-whatsapp",
+    Messenger: "fab fa-facebook-messenger",
+    Linkedin: "fab fa-linkedin",
+    Instagram: "fab fa-instagram",
+    Phone: "fas fa-phone",
+  };
+  return iconMapping[socialType] || "default-icon-class";
+};
+
+const socialURL = (socialType, socialUrl) => {
+  const iconMapping = {
+    Facebook: `https://www.facebook.com/${socialUrl}/`,
+    Twitter: `https://www.twitter.com/${socialUrl}/`,
+    Whatsapp: `https://wa.me/+88${socialUrl}?text=Hello!`,
+    Messenger: `https://www.messenger.com/t/${socialUrl}/`,
+    Linkedin: `https://www.linkedin.com/${socialUrl}/`,
+    Instagram: `https://www.instagram.com/${socialUrl}/`,
+    Phone: `tel:${socialUrl}`,
+  };
+  return iconMapping[socialType] || "default-icon-class";
+};
+
 
 const incrementCartItem = () => {
   quantityInput.value = parseInt(quantityInput.value) + 1;
@@ -197,6 +232,7 @@ const stickyFooter = () => {
 
 
 onMounted(() => {
+  getSettingsData();
   stickyFooter();
   productByid();
 });
@@ -207,16 +243,276 @@ onMounted(() => {
   <div>
     <section class="inner-section mt-4" v-if="singleProduct">
       <div class="container">
-        <!-- <div >
-          <div  >
+       <div class="img-showcase">
+        <div  class="image">
             <ProductImage :singleProduct="singleProduct" :type="'details'" />
           </div>
-        </div> -->
-        <div>
-          <div >
-            <ProductDetails :singleProduct="singleProduct" :productVariations="productVariations" :type="'details'"  @productVariationPrice="handleProductVariationPrice" @productVariationData="handleProductVariationData" @activeBtns="handleActiveBtns" />
+       </div>
+  
+      <div class="details-content" >
+        <div class="col-lg-12 price-details">
+          <div  :class="`${type}-content`">
+          <h3 :class="`${type}-name`">
+            <a href="#">{{ singleProduct?.name }}</a>
+          </h3>
+
+            <!-- Price Section start -->
+            <!-- Product Variation Price Section start -->
+            <span v-if="singleProduct?.variations?.data.length > 0">
+              <h3 :class="`${type}-price my-2`" v-if="productVariationPrice == '' || productVariationPrice == undefined">
+                <span v-if="singleProduct.variation_price_range.min_price == singleProduct.variation_price_range.max_price">{{ $filters.currencySymbol( singleProduct.variation_price_range.min_price || singleProduct.variation_price_range.max_price ) }}</span>
+                <span v-else>{{ $filters.currencySymbol( singleProduct.variation_price_range.min_price ) }} - {{ $filters.currencySymbol( singleProduct.variation_price_range.max_price ) }}</span>
+              </h3>
+              <h3 :class="`${type}-price my-2`" v-else>
+                <span>{{
+                  $filters.currencySymbol(productVariationPrice?.sell_price)
+                }}</span>
+              </h3>
+            </span>
+            <!-- Product Variation Price Section end -->
+            <span v-else>
+              <h3 :class="`${type}-price`">
+                <del>{{ $filters.currencySymbol(singleProduct.mrp) }}</del>
+                <span>{{ $filters.currencySymbol( mrpOrOfferPrice( singleProduct.mrp, singleProduct.offer_price ))}}</span>
+                <a class="discout_amount" v-if="singleProduct.offer_price != 0" >Save {{ Math.round(singleProduct.mrp - singleProduct.offer_price) }}৳</a >
+              </h3>
+            </span>
+            <!-- Price Section end -->
+          
+            <div :class="`${type}-meta`">
+              <p v-if="singleProduct?.sku">SKU:<span>{{ singleProduct?.sku }}</span></p>
+              <p v-if="singleProduct?.brand">
+                BRAND:<a href="#">{{ singleProduct?.brand?.name }}</a>
+              </p>
+            </div>
+            <div :class="`${type}-meta`">
+              <p v-if="singleProduct?.category">
+                Category:<a href="#">{{ singleProduct?.category?.name }}</a>
+              </p>
+              <p v-if="singleProduct?.sub_category">
+                Sub Category:<a href="#">{{
+                  singleProduct?.sub_category?.name
+                }}</a>
+              </p>
+            </div>
+          
+            <!-- <p
+              :class="`${type}-desc mt-2`" 
+              v-if="singleProduct.short_description"
+            >Quick Overview :</p>
+            <p
+              :class="`${type}-desc mt-2`"
+              v-if="singleProduct.short_description"
+              v-html="singleProduct.short_description"
+            ></p> -->
+          
+            <!-- Product Variation Price Section start -->
+          
+            <ProductVariation :productVariations="productVariations" :allVariations="singleProduct?.variations?.data" @productVariationPrice="handleProductVariationPrice" @productVariationData="handleProductVariationData" @activeBtns="handleActiveBtns"  />
+          
+            <!-- Product Variation Price Section end -->
+          
+            <div :class="`${type}-list-group`" v-if="singleProduct?.video_url">
+              <div class="videoHW">
+                <iframe class="mt-5"  :src="getEmbedUrl(singleProduct?.video_url)" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>              
+              </div>
+            </div>
+          
+            <div :class="`${type}-list-group`">
+              <label
+              :class="`${type}-list-title`"
+                v-show="socialShares?.data?.length > 0"
+                >Share:</label
+              >
+              <ul :class="`${type}-share-list`">
+                <li
+                  v-for="(socialShare, index) in socialShares?.data"
+                  :key="index"
+                >
+                  <a
+                    :href="socialURL(socialShare.title, socialShare.link)"
+                    target="_blank"
+                    title=""
+                    ><i :class="socialIcons(socialShare.title)"></i
+                  ></a>
+                </li>
+              </ul>
+    </div>
+  </div>
+  </div>  
+            <div class="col-lg-12 mt-3">
+              <!-- <div class="details-list-group">
+                <label class="details-list-title" v-show="socialShares.length > 0"
+                  >Share:</label
+                >
+                <ul class="details-share-list">
+                  <li v-for="(socialShare, index) in socialShares" :key="index">
+                    <a :href="socialURL(socialShare.type, socialShare.contact)" target="_blank" title=""
+                      ><i :class="socialIcons(socialShare.type)"></i
+                    ></a>
+                  </li>
+                </ul>
+              </div> -->
+    
+              
+              <div class="details-add-group" v-if="singleProduct?.variations?.data.length > 0">
+                <div class="row">
+                  <span
+                    class=" d-block text-center text-danger"
+                    v-if="productPrices == null"
+                    >প্রথমে কোয়ানটিটি সিলেক্ট করুন তারপর<span class="fw-bold">অর্ডার করুন</span> বাটনে ক্লিক করুন অথবা<span class="fw-bold">কার্টে যোগ করুন</span>বাটনে ক্লিক করুন </span
+                  >
+                  <div class="col-md-3 col-sm-4 mt-2">
+                    <div class="quentyDefaultClass" :class="{ 'quantity-disabled': activeBtns === false && singleProduct?.variations?.data.length > 0, } " >
+                      <button class="minus" :disabled=" activeBtns === false && 
+                        singleProduct?.variations?.data.length > 0"
+                        aria-label="Decrease" @click.prevent="decrementCartItem">
+                        &minus;
+                      </button>
+                      
+                      <input class="action-input text-center" :class="selectedSize == null ? 'disabled' : ''"
+                        title="Quantity Number" type="text" name="quantity" v-model="quantityInput"/>
+
+                      <button class="plus" :disabled=" activeBtns === false && singleProduct?.variations?.data.length > 0"
+                        aria-label="Increase" @click.prevent="incrementCartItem">
+                        &plus;
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="col-md-3 col-sm-6 mt-2 add-to-cart" >
+                    <button
+                      class="product-add"
+                      title="Add to Cart"
+                      :disabled="activeBtns === false && selectedSize == null ? true : false"
+                      :class="selectedSize == null ? 'disabled' : ''"
+                      @click.prevent="addToCart(singleProduct, quantityInput)"
+                    >
+                      <template v-if="isloading">
+                        <beat-loader
+                          :loading="loading"
+                          :color="color"
+                          :size="size"
+                        ></beat-loader>
+                      </template>
+                      <template v-else><i class="fas fa-shopping-basket"></i></template>
+                      <span>কার্টে যোগ করুন</span>
+                    </button>
+                  </div>
+
+                  
+
+                  
+                 
+
+                  <div class="col-md-6 mt-2" v-if="activeBtns === false">
+                    <router-link
+                      :to="{ name: 'checkoutPage' }"
+                      :disabled="productPrices == null ? true : false"
+                      class="product-add bg-warning text-dark main-order-btn"
+                      @click.prevent="addToCart(singleProduct, quantityInput, productVariationData, productVariationPrice, campaignSlug); modalClose()"
+                       :class="{ 'singleProductBtn ': activeBtns === false }"
+                    >
+                      <i class="fas fa-shopping-basket fs-4"></i>
+                      <span class="order-btn">অর্ডার করুন</span>
+                    </router-link>
+                  </div>
+                  
+                  <div class="col-md-6 mt-2" v-else>
+                    <router-link
+                      :to="{ name: 'checkoutPage' }"
+                      class="product-add bg-warning text-dark main-order-btn"
+                      @click.prevent="addToCart(singleProduct, quantityInput, productVariationData, productVariationPrice, campaignSlug); modalClose()"
+                      :class="selectedSize == null ? 'disabled' : ''"
+                    >
+                      <i class="fas fa-shopping-basket fs-4"></i>
+                      <span class="order-btn">অর্ডার করুন</span>
+                    </router-link>
+                  </div>
+                 
+                </div>
+                
+                <div class="row mt-lg-3 mt-0">
+                  <div class="col-md-6 mt-2">
+                    <a class="product-add bg-success" :href="socialURL('Whatsapp', whatsapp?.value)" target="_blank" ><span>{{whatsappText?.value}} <i class="fab fa-whatsapp" style="font-size:18px"></i> <span class="fw-bold"> {{whatsapp?.value}}</span></span></a>
+                  </div>
+                  <div class="col-md-6 mt-2">
+                    <a class="product-add bg-success" :href="socialURL('Phone', phone?.value)" target="_blank" ><span>হট লাইন নাম্বার : <span class="fw-bold"> {{phone?.value}}</span></span></a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="details-add-group" v-else>
+                <div class="row">
+                  <div class="col-md-3 mt-2">
+                    <div class="quentyDefaultClass">
+
+                      <button class="minus" :disabled=" activeBtns === false && singleProduct?.variations?.data.length > 0 "
+                        aria-label="Decrease" @click.prevent="decrementCartItem">
+                        &minus;
+                      </button>
+
+                      <input class="action-input text-center" title="Quantity Number" type="text" name="quantity" v-model="quantityInput"/>
+
+                      <button
+                        class="plus"
+                        :disabled="
+                          activeBtns === false &&
+                          singleProduct?.variations?.data.length > 0
+                        "
+                        aria-label="Increase"
+                        @click.prevent="incrementCartItem"
+                      >
+                        &plus;
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="col-md-3 mt-2 add-to-cart">
+                    <button
+                      class="product-add"
+                      title="Add to Cart"
+                      @click.prevent="addToCart(singleProduct, quantityInput)"
+                    >
+                      <template v-if="isloading">
+                        <beat-loader
+                          :loading="loading"
+                          :color="color"
+                          :size="size"
+                        ></beat-loader>
+                      </template>
+                      <template v-else><i class="fas fa-shopping-basket"></i></template>
+                      <span>কার্টে যোগ করুন</span>
+                    </button>
+                  </div>
+
+
+                  <div class="col-md-6 mt-2">
+                    <router-link
+                      :to="{ name: 'checkoutPage' }"
+                      class="product-add bg-warning text-dark main-order-btn"
+                      title="Add to Cart"
+                      @click.prevent="addToCart(singleProduct, quantityInput)"
+                    >
+                      <i class="fas fa-shopping-basket"></i>
+                      <span class="order-btn">অর্ডার করুন</span>
+                    </router-link>
+                  </div>
+                </div>
+
+                <div class="row mt-lg-3 mt-0">
+                <div class="col-md-6 mt-2">
+                  <a class="product-add bg-success" :href="socialURL('Whatsapp', whatsapp?.value)" target="_blank" ><span>{{whatsappText?.value}} <i class="fab fa-whatsapp" style="font-size:18px"></i> <span class="fw-bold"> {{whatsapp?.value}}</span></span></a>
+                </div>
+                <div class="col-md-6 mt-2">
+                  <a class="product-add bg-success" :href="socialURL('Phone', phone?.value)" ><span>হট লাইন নাম্বার : <span class="fw-bold"> {{phone?.value}}</span></span></a>
+                </div>
+              </div>
+
+              </div>
+            </div>
           </div>
-        </div>
+
       </div>
     </section>
     <section class="inner-section mt-4" v-else>
@@ -452,6 +748,19 @@ onMounted(() => {
 
 <style scoped>
 
+.img-showcase{
+  display: flex;
+  justify-content: center;
+}
+
+.image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+}
+
+
 .footer-price{
   font-size: 24px;
   font-weight: 600;
@@ -508,11 +817,7 @@ onMounted(() => {
   cursor: crosshair;
 }
 
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+
 
 .zoom-lens {
     position: absolute;
@@ -587,14 +892,11 @@ onMounted(() => {
 .img-display {
   overflow: hidden;
 }
-.img-showcase {
-  display: flex;
-  width: 100%;
-  transition: all 0.5s ease;
-}
-.img-showcase img {
-  min-width: 100%;
-}
+
+
+
+
+
 .img-select {
   display: flex;
 }

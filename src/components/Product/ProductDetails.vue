@@ -29,15 +29,15 @@ const props = defineProps({
 });
 
 
-const sizeName      = ref("");
-const productPrices = ref("");
-const route         = useRoute();
-const shop          = useShop();
-const cart          = useCart();
-const { loading }   = storeToRefs(cart);
-const notify        = useNotification();
-const quantityInput = ref(1);
-const setting       = useSetting();
+const sizeName              = ref("");
+const productPrices         = ref("");
+const route                 = useRoute();
+const shop                  = useShop();
+const cart                  = useCart();
+const { loading }           = storeToRefs(cart);
+const notify                = useNotification();
+const quantityInput         = ref(1);
+const setting               = useSetting();
 
 
 
@@ -48,14 +48,15 @@ const activeBtns            = ref(false);
 
 
 // social Icons start
-const socialShares = ref("");
+const socialShares          = ref("");
 // social Icons end
 // Setting data start
-const websiteUrl  = ref("");
-const phone       = ref("");
-const whatsapp    = ref("");
-const messengerId = ref("");
-const whatsappText = ref("");
+const websiteUrl            = ref("");
+const phone                 = ref("");
+const whatsapp              = ref("");
+const messengerId           = ref("");
+const whatsappText          = ref("");
+const phoneText             = ref("");
 // Setting data end
 
 // get products variation working end
@@ -76,11 +77,14 @@ const getSettingsData = async () => {
     if (ele.key == "phone_number") {
       phone.value = ele;
     }
-    if (ele.key == "whatsapp_text") {
-      whatsappText.value = ele;      
+    if (ele.key == "phone_text") {
+      phoneText.value = ele;
     }
     if (ele.key == "whatsapp_number") {
       whatsapp.value = ele;
+    }
+    if (ele.key == "whatsapp_text") {
+      whatsappText.value = ele;      
     }
     if (ele.key == "website_url") {
       websiteUrl.value = ele;
@@ -91,6 +95,19 @@ const getSettingsData = async () => {
   });
 };
 // setting data end
+
+
+// const connectWhatsApp = (whatsappNumber)=>{
+//   const phoneNumber = whatsappNumber;
+//   const whatsappLink = `https://wa.me+88${phoneNumber}?text=hello!`;
+//   window.location.href = whatsappLink
+// }
+
+// const connectPhone = (number)=>{
+//   const phoneNumber = number;
+//   const phoneLink = `tel:${phoneNumber}`;
+//   window.location.href = phoneLink;
+// }
 
 
 const getPrices = async (sizeI, name) => {
@@ -139,7 +156,7 @@ const socialURL = (socialType, socialUrl) => {
     Messenger: `https://www.messenger.com/t/${socialUrl}/`,
     Linkedin: `https://www.linkedin.com/${socialUrl}/`,
     Instagram: `https://www.instagram.com/${socialUrl}/`,
-    Phone: `https://m.me/+88${socialUrl}`,
+    Phone: `tel:${socialUrl}`,
   };
   return iconMapping[socialType] || "default-icon-class";
 };
@@ -404,10 +421,10 @@ onMounted(() => {
                 
                 <div class="row mt-lg-3 mt-0">
                   <div class="col-md-6 mt-2">
-                    <a class="product-add bg-success"><span><i class="fab fa-whatsapp" style="font-size:18px"></i> <span class="fw-bold"><i class="fas fa-phone-alt"></i> {{whatsapp?.value}}</span></span></a>
+                    <a class="product-add bg-success" ><span>{{whatsappText?.value}} <i class="fab fa-whatsapp" style="font-size:18px"></i> <span class="fw-bold"> {{whatsapp?.value}}</span></span></a>
                   </div>
                   <div class="col-md-6 mt-2">
-                    <a class="product-add bg-success"><span>হট লাইন নাম্বার : <span class="fw-bold"> {{phone?.value}}</span></span></a>
+                    <a class="product-add bg-success" :href="socialURL('Phone', phone?.value)" ><span>হট লাইন নাম্বার : <span class="fw-bold"> {{phone?.value}}</span></span></a>
                   </div>
                 </div>
               </div>
