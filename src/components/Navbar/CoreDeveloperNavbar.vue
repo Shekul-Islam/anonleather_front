@@ -5,6 +5,7 @@ import { useRouter, useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
 import { ref, onMounted } from "vue";
 import axiosInstance from "@/services/axiosService.js";
+import CategorySkeleton from '@/components/skeleton/CategorySkeleton.vue'
 // All Variable  Code Is Here.....................................................................................................
 const auth = useAuth();
 const router = useRouter();
@@ -71,7 +72,7 @@ onMounted(() => {
                               </template>
                               <template v-else>
                                 <li class="banner-category-item" v-for="(category, index) in categories?.data" :key="index">
-                                  <router-link :to="{ name: 'shopPage', query: { category: category?.id }}">
+                                  <router-link :to=" { name: 'shopPage', query: { category: category?.id } } "> 
                                     <i class="flaticon-vegetable"></i>
                                     <span>{{ category?.name }}</span>
                                     <i class="fa-solid fa-arrow-right ms-auto fs-6" @click.prevent="toggleDropdown(index, category)" v-if="category?.sub_category?.length > 0"></i>

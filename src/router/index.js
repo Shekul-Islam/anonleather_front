@@ -69,7 +69,7 @@ const routes = [
   {
     path: "/your-order-submited",
     name: "thankYou.page",
-    component: () => import('@/views/pages/thankyou.vue'),
+    component: () => import('@/views/pages/ThankYou.vue'),
     meta: { title: " Thank You" },
   },
   {

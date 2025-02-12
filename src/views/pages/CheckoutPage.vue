@@ -156,13 +156,13 @@ const paymentGatewayRef   = ref(null);
       }
 
 
-      // if (Object.keys(auth.user).length > 0) {
-      // }else{
-      //   const res = await auth.login({phone_number: phoneNumber.value, name: name.value});
-      //   if (res?.status == 200) {
-      //     modal.toggleModal() 
-      //   }
-      // }
+      if (Object.keys(auth.user).length > 0) {
+      }else{
+        const res = await auth.login({phone_number: phoneNumber.value, name: name.value});
+        if (res?.status == 200) {
+          modal.toggleModal()
+        }
+      }
 
     };
 
@@ -809,15 +809,28 @@ const checkScreenSize = () => {
   transition: .3s ease-in-out;
   font-weight: 500;
   font-size: 23px;
-  animation: pulse 2s infinite; 
+  animation: pulse 1.5s infinite; 
 }
+
+@keyframes pulse {
+  0% {
+    transform: scale(1.);
+  }
+  50% {
+    transform: scale(.9); /* আগের থেকে কম zoom effect */
+  }
+  100% {
+    transform: scale(1.);
+  }
+}
+
 .orderBTN:hover{
   background-color: var(--secondary-color);
   border-top: 3px solid var(--secondary-color);
   border-left: 3px solid var(--secondary-color);
   border-bottom: 3px solid var(--secondary-color);
   border-right: 3px solid var(--secondary-color);
-  color: var(--white);
+  color: var(--black);
 }
 
 .img{

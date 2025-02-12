@@ -2,6 +2,7 @@
 import SingleProductPageSkeleton from '../../../components/skeleton/SingleProductPageSkeleton.vue'
 import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
+import BeatLoader from "vue-spinner/src/BeatLoader.vue";
 import {
   useProduct,
   useCart,
@@ -41,6 +42,7 @@ const route         = useRoute();
 const shop          = useShop();
 const cart          = useCart();
 const { loading }   = storeToRefs(cart);
+const isloading     = ref(loading);
 const notify        = useNotification();
 const price         = ref();
 const quantityInput = ref(1);
@@ -63,7 +65,10 @@ const whatsappText          = ref("");
 const phoneText             = ref("");
 // Setting data end
 // related product start
+const type = ref(""); 
 const relatedProducts = ref("");
+const socialShares          = ref("");
+const selectedSize = ref();
 // related product end
 
 const alertTimeout = ref("");
@@ -72,7 +77,7 @@ const alertTimeout = ref("");
 const productByid = async () => {
   singleProduct.value = await product.productById(route.params.slug);
   productVariations.value = singleProduct.value?.variations?.attributes;
-  categoryId.value.push(singleProduct.value?.category.id);
+  categoryId.value.push(singleProduct.value?.category?.id);
 };
 // get products end
 
@@ -84,7 +89,7 @@ const handleProductVariationPrice = (data) => {
 
 // product prices start
 const handleProductVariationData = (data) => {
-  productVariationData.value = data  
+  productVariationData.value = data
 }
 // product prices end
 
@@ -121,6 +126,17 @@ const getSettingsData = async () => {
 };
 // setting data end
 
+// social media link  start
+
+const socialMedia = async () => {
+  try {
+    const res = await axiosInstance.get("/social-medias");
+    socialShares.value = res.data.result;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const socialIcons = (socialType) => {
   const iconMapping = {
     Facebook: "fab fa-facebook-f",
@@ -147,6 +163,12 @@ const socialURL = (socialType, socialUrl) => {
   return iconMapping[socialType] || "default-icon-class";
 };
 
+const getEmbedUrl = (url) => {
+  if (!url) return "";
+  const videoIdMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+  return videoIdMatch ? `https://www.youtube.com/embed/${videoIdMatch[1]}` : "";
+};
+
 
 const incrementCartItem = () => {
   quantityInput.value = parseInt(quantityInput.value) + 1;
@@ -155,6 +177,20 @@ const decrementCartItem = () => {
   if (quantityInput.value != 1) {
     quantityInput.value = parseInt(quantityInput.value) - 1;
   }
+};
+
+
+const getPrices = async (sizeI, name) => {
+  try {
+    const res = await axiosInstance.get(`/products/${route.params.id}/${sizeI}`);
+    selectedSize.value = sizeI;
+    productPrices.value = res.data.result;
+  } catch (error) {
+    console.log(error);
+  }  
+  sizeName.value = name;
+  console.log(selectedSize.value);
+
 };
 
 
@@ -202,7 +238,7 @@ const stickyFooter = () => {
 
 // Related product  start
   const getRelatedProductData = async (catId) => {
-    let type = "";
+    let type = [];
     let brand = [];
     let subCategory = [];
     let attributeIds = [];
@@ -241,7 +277,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <section class="inner-section mt-4" v-if="singleProduct">
+    <section class="inner-section " v-if="singleProduct">
       <div class="container">
        <div class="img-showcase">
         <div  class="image">
@@ -434,7 +470,7 @@ onMounted(() => {
                 
                 <div class="row mt-lg-3 mt-0">
                   <div class="col-md-6 mt-2">
-                    <a class="product-add bg-success" :href="socialURL('Whatsapp', whatsapp?.value)" target="_blank" ><span>{{whatsappText?.value}} <i class="fab fa-whatsapp" style="font-size:18px"></i> <span class="fw-bold"> {{whatsapp?.value}}</span></span></a>
+                    <a class="product-add bg-success" :href="socialURL('Whatsapp', whatsapp?.value)" target="_blank" ><span> <i class="fab fa-whatsapp" style="font-size:18px"></i> <span class="fw-bold"> {{whatsapp?.value}}</span></span></a>
                   </div>
                   <div class="col-md-6 mt-2">
                     <a class="product-add bg-success" :href="socialURL('Phone', phone?.value)" target="_blank" ><span>হট লাইন নাম্বার : <span class="fw-bold"> {{phone?.value}}</span></span></a>
@@ -609,9 +645,8 @@ onMounted(() => {
 
     <!-- Cross Sell Product -->
     
-    
+   
     <!-- Related Product -->
-
     <section class="inner-section mt-3 mb-4" v-if="relatedProducts.length > 0">
       <div class="container">
         <div class="row">
@@ -750,6 +785,7 @@ onMounted(() => {
 
 .img-showcase{
   display: flex;
+  margin-bottom: 25px;
   justify-content: center;
 }
 

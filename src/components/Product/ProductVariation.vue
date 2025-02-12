@@ -323,7 +323,7 @@ const getVariations = (attributeKey, attributeValue, allVariations, index) => {
 const getIsDefaultAttribute = (allVariations) => {
   const defaultAttributes = allVariations?.filter(e => e.is_default);
   
-  if (defaultAttributes.length > 0) {
+  if (defaultAttributes && defaultAttributes.length > 0) {
     defaultVariation.value = defaultAttributes[0];
     productVariationPrice.value = defaultAttributes;
     

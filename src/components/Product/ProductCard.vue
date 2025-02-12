@@ -144,6 +144,7 @@ onMounted(() => {
           </div>
           
           <!-- campaign product er jonno ei route start -->
+          
            <span  v-if="isCampaign">
             <router-link :to="{ name: 'CampaignProductDetails', params: { campaign_slug: campaignSlug ? campaignSlug : '', product_slug: product?.slug ? product?.slug : '' } }" class="hover14 column hover01 column">
                <div class="product-image">

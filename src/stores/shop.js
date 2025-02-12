@@ -15,7 +15,6 @@ export const useShop = defineStore("shop", {
 
     async getData(type = "", brand, category, subCategory, attributeIds, price, search, paginateSize) {
         this.loading = true
-        console.log("📡 API Calling with params:", { type, brand, category, subCategory, attributeIds, price, search, paginateSize });
       try {
         const res = await axiosInstance.get(`/products`, {
           params: {

@@ -32,7 +32,7 @@ import { ref, onMounted } from "vue";
     
     <Blog />
     
-    <AnonleatherLocationStoreSection /> 
+    <!-- <AnonleatherLocationStoreSection />  -->
   </div>
 </template>
 

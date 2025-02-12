@@ -51,7 +51,7 @@ onMounted(() => {
             v-for="(product, index) in section.products.data"
             :key="index"
           >
-            <ProductCard :product="product"  />
+            <ProductCard :product="product" />
             <!-- <CoreDeveloperProductCard :product="product" :types="'sale'" /> -->
           </div>
         </div>

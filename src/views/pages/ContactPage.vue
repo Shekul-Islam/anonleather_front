@@ -16,7 +16,7 @@ const userPhone       = ref("");
 const userDescription = ref("");
 
 const getSettingData = async () => {
-  const value = await setting.getDatas();
+  const value = await setting.getData();
   value.data.map((ele) => {
     if (ele.key == "footer_email") {
       email.value = ele.value;

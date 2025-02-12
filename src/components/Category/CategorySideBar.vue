@@ -18,14 +18,14 @@ const getCategories = async() =>{
 const activeIndex = ref(null);
 
  const toggleDropdown = (index, category) => {
-  if (category.sub_category.length > 0) {
+  if (category?.sub_category.length > 0) {
     if (activeIndex.value === index) {
       activeIndex.value = null; // Hide dropdown if already active
     } else {
       activeIndex.value = index; // Show dropdown of clicked item
     }
   }else{
-    router.push({ name:'shopPage', query:{ category: category.id} });
+    router.push({ name:'shopPage', query:{ category: category?.id} });
   }
 }
 
@@ -51,13 +51,17 @@ onMounted(() => {
             </div>
             <ul class="category-list">
                  <li class="category-item" v-for="(category, index) in categories?.data" :key="index">
-                    <router-link :to="{name: 'shopPage', query:{ category: category.id}}" class="category-link dropdown-link" :class="{ active: activeIndex === index }">
+                    <router-link :to="{name: 'shopPage', query:{ category: category?.id}}" class="category-link dropdown-link" :class="{ active: activeIndex === index }">
                         <i class="flaticon-vegetable"></i>
-                        <span>{{ category.name }}</span>
-                        <i class="fa-solid fa-arrow-right ms-auto fs-6" @click.prevent="toggleDropdown(index, category)" v-if="category.sub_category.length > 0"></i>
+                        <span>{{ category?.name }}</span>
+                        <i v-if="category && category.sub_category && category.sub_category.length > 0" 
+                          class="fa-solid fa-arrow-right ms-auto fs-6" 
+                          @click.prevent="toggleDropdown(index, category)">
+                        </i>
+
                     </router-link>
                     <ul class="dropdown-list:visible" v-show="activeIndex === index">
-                        <li class="category-item" v-for="(subCategory, index) in category.sub_category">
+                        <li class="category-item" v-for="(subCategory, index) in category?.sub_category">
                           <router-link :to="{ name:'shopPage', query:{ subCategory: subCategory.id} }" class="category-link">{{ subCategory.name }}</router-link>
                         </li>
                     </ul>

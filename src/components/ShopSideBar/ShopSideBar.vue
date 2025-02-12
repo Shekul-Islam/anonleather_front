@@ -105,9 +105,9 @@ onMounted(() => {
                   <!-- <span class="shop-widget-number">({{ attributeValue.products_count }})</span> -->
                 </li>
                 
-                <li v-show="searchCategories.length === 0">
+                <!-- <li v-show="searchCategories.length === 0">
                   <img src="@/assets/images/nodatafound.png" class="image-fluid mt-5" alt="" />
-                </li>
+                </li> -->
               </ul>
               <button class="shop-widget-btn" @click.prevent="clearFilter('attributeValue')">
                 <i class="far fa-trash-alt"></i>
@@ -131,9 +131,9 @@ onMounted(() => {
                   </div>
                   <span class="shop-widget-number">({{ category.products_count }})</span>
                 </li>
-                <li v-show="searchCategories?.length === 0">
+                <!-- <li v-show="searchCategories?.length === 0">
                   <img src="@/assets/images/nodatafound.png" class="image-fluid mt-5" alt="" />
-                </li>
+                </li> -->
               </ul>
               <button class="shop-widget-btn" @click.prevent="clearFilter('category')">
                 <i class="far fa-trash-alt"></i>
@@ -158,9 +158,9 @@ onMounted(() => {
                   </div>
                   <span class="shop-widget-number">({{ brand.products_count }})</span>
                 </li>
-                <li v-show="searchBrands?.length === 0">
+                <!-- <li v-show="searchBrands?.length === 0">
                   <img src="@/assets/images/nodatafound.png" class="image-fluid mt-5" alt="" />
-                </li>
+                </li> -->
               </TransitionGroup>
               <button class="shop-widget-btn" @click.prevent="clearFilter('brand')">
                 <i class="far fa-trash-alt"></i>

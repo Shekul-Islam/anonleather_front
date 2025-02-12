@@ -20,7 +20,6 @@ export const useOrder = defineStore('order', {
     // API Calling Code Is Here.....................................................................................................
     
       async storeOrder(orderInfo) {
-        console.log(orderInfo);
         try {
           this.loading = true;
           const response = await axiosInstance.post('/orders',{

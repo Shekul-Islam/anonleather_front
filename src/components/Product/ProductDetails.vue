@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
+import BeatLoader from "vue-spinner/src/BeatLoader.vue";
 import { useProduct, useCart, useNotification, useShop, useSetting, } from "@/stores";
 import { storeToRefs } from "pinia";
 import { ProductVariation, ProductImage } from "@/components";
@@ -8,11 +9,10 @@ import { mrpOrOfferPrice, addToCart } from "@/composables";
 import axiosInstance from "@/services/axiosService.js";
 const emit = defineEmits(['productVariationPrice', 'productVariationData', 'activeBtns']);
 
-
 const props = defineProps({
  singleProduct: {
     type: [Object, String],
-    default: {}, 
+    default: {},
   },
  productVariations: {
     type: Object,
@@ -35,6 +35,8 @@ const route                 = useRoute();
 const shop                  = useShop();
 const cart                  = useCart();
 const { loading }           = storeToRefs(cart);
+const isloading             = ref(loading);
+const selectedSize          = ref();
 const notify                = useNotification();
 const quantityInput         = ref(1);
 const setting               = useSetting();
@@ -232,12 +234,12 @@ onMounted(() => {
           <ProductImage :singleProduct="singleProduct" :type="'details'"/>
       </div>
     </div>
-  <div class="col-lg-6 price-details">
+
+  <div class="col-lg-6">
     <div  :class="`${type}-content`">
     <h3 :class="`${type}-name`">
       <a href="#">{{ singleProduct?.name }}</a>
     </h3>
-
         <!-- Price Section start -->
     <!-- Product Variation Price Section start -->
     <span v-if="singleProduct?.variations?.data.length > 0">
@@ -421,7 +423,7 @@ onMounted(() => {
                 
                 <div class="row mt-lg-3 mt-0">
                   <div class="col-md-6 mt-2">
-                    <a class="product-add bg-success" ><span>{{whatsappText?.value}} <i class="fab fa-whatsapp" style="font-size:18px"></i> <span class="fw-bold"> {{whatsapp?.value}}</span></span></a>
+                    <a class="product-add bg-success" ><span> <i class="fab fa-whatsapp" style="font-size:18px"></i> <span class="fw-bold"> {{whatsapp?.value}}</span></span></a>
                   </div>
                   <div class="col-md-6 mt-2">
                     <a class="product-add bg-success" :href="socialURL('Phone', phone?.value)" ><span>হট লাইন নাম্বার : <span class="fw-bold"> {{phone?.value}}</span></span></a>
@@ -509,12 +511,7 @@ onMounted(() => {
 
 <style scoped>
 
-.price-details {
-  display: flex;
-  flex-direction: column;
-  margin-top: auto; /* উপরের এলিমেন্ট শেষ হলে এটি নিচে যাবে */
-  padding-bottom: 10px;
-}
+
 
 .top-details{
   height: 25%;

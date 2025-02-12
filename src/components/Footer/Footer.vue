@@ -1,6 +1,6 @@
 <script setup>
 // All Import File  Code Is Here......................................................................................................
-import { onMounted, ref, watch  } from "vue";
+import { computed, onMounted, ref, watch  } from "vue";
 import { storeToRefs } from 'pinia';
 import {useSetting} from '@/stores'
 import axiosInstance from "@/services/axiosService.js";
@@ -74,12 +74,16 @@ const getLogo = async () => {
 
 const socialMedia = async () => {
   try {
-    const res = await axiosInstance.get("/social-medias");
+    const res = await axiosInstance.get("/social-medias");    
     socialShares.value = res.data.result;
+    console.log("Updated Data:", socialShares.value);
   } catch (error) {
     console.log(error);
   }
 };
+
+const socialMediaData = computed(()=> socialShares.value);
+
 
 const socialIcons = (socialType) => {
   const iconMapping = {
@@ -129,20 +133,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <footer class="pt-5 main-section-footer">
+  <div class="footer-main-section">
+  <footer class="mt-5">
       <div class="container">
         <div class="row">
           <div class="col-sm-6 col-xl-3">
             <div class="footer-widget">
-              <router-link :to="{ name: 'homePage'}" class="footer-logo">
+              <router-link :to="{ name: 'homePage'}" class="footer-logo" href="#">
                 <img :src="logo?.value" alt="logo" />
               </router-link>
-              <p class="footer-desc text-light">{{ description?.value }}</p>
-              <ul class="footer-social" v-show="socialShares?.data?.length > 0">
-                <li v-for="(socialShare, index) in socialShares?.data" :key="index">
-                  <a :href="socialURL(socialShare.title, socialShare.link)" target="_blank" title="">
-                    <i :class="socialIcons(socialShare.title)"></i>
+              <p class="footer-desc ">{{ description?.value }}</p>
+              <ul class="footer-social" v-show="socialShares.length > 0">
+                <li v-for="(socialShare, index) in socialShares" :key="index">
+                  <a :href="socialURL(socialShare.type, socialShare.contact)" target="_blank" title="">
+                    <i :class="socialIcons(socialShare.type)"></i>
                   </a>
                 </li>
               </ul>
@@ -151,28 +155,28 @@ onMounted(() => {
           <div class="col-sm-6 col-xl-3">
             <div class="footer-widget contact">
               <h3 class="footer-title text-light">contact us</h3>
-              <ul class="footer-contact text-light">
+              <ul class="footer-contact ">
                 <li>
                   <i class="icofont-ui-email"></i>
                   <p>
-                    <span>{{ email?.value }}</span>
+                    <span class="text-light">{{ email?.value }}</span>
                   </p>
                 </li>
                 <li>
                   <i class="icofont-ui-touch-phone"></i>
                   <p>
-                    <span>+88{{ phone?.value }}</span>
+                    <span class="text-light">+88{{ phone?.value }}</span>
                   </p>
                 </li>
                 <li>
                   <i class="icofont-phone-circle"></i>
                   <p>
-                    <span>+88{{ whatsapp?.value }}</span>
+                    <span class="text-light">+88{{ whatsapp?.value }}</span>
                   </p>
                 </li>
                 <li>
                   <i class="icofont-location-pin"></i>
-                  <p>{{ address?.value }}</p>
+                  <p class="text-light">{{ address?.value }}</p>
                 </li>
               </ul>
             </div>
@@ -183,17 +187,17 @@ onMounted(() => {
                 <h3 class="footer-title text-light">quick Links</h3>
                 <div class="footer-links">
                     <ul>
-                        <li><router-link :to="{ name: 'TermsConditions' }" class="text-light">Terms & Conditions</router-link></li>
-                        <li><router-link :to="{ name: 'aboutPage' }" class="text-light">About us</router-link></li>
-                        <li><router-link :to="{ name: 'PrivacyPolicy' }" class="text-light">privacy policy</router-link></li>
-                        <li><router-link :to="{ name: 'ReturnRefund' }" class="text-light">Return & Refund</router-link></li>
+                        <li><router-link :to="{ name: 'TermsConditions' }" class="">Terms & Conditions</router-link></li>
+                        <li><router-link :to="{ name: 'aboutPage' }" class="">About us</router-link></li>
+                        <li><router-link :to="{ name: 'PrivacyPolicy' }" class="">privacy policy</router-link></li>
+                        <li><router-link :to="{ name: 'ReturnRefund' }" class="">Return & Refund</router-link></li>
                     </ul>
                     <ul>
-                        <li><a :href="`https://www.facebook.com/${fbPageUrl}`" target="_blank" class="text-light">Facebook</a></li>
-                        <li><router-link :to="{ name: 'contactPage' }" class="text-light">contact us</router-link></li>
-                        <li><router-link :to="{ name: 'shopPage' }" class="text-light">Shop page</router-link></li>
-                        <li><router-link :to="{ name: 'shopPage', query: {top: 'top-product'}}" class="text-light">Top product</router-link></li>
-                        <li><router-link :to="{ name: 'shopPage', query: {recent: 'recent-product'}}" class="text-light">New Arrivals</router-link></li>
+                        <li><a :href="`https://www.facebook.com/${facebook?.value}`" target="_blank" class="">Facebook</a></li>
+                        <li><router-link :to="{ name: 'contactPage' }" class="">contact us</router-link></li>
+                        <li><router-link :to="{ name: 'shopPage' }" class="">Shop page</router-link></li>
+                        <li><router-link :to="{ name: 'shopPage', query: {top: 'top-product'}}" class="">Top product</router-link></li>
+                        <li><router-link :to="{ name: 'shopPage', query: {recent: 'recent-product'}}" class="">New Arrivals</router-link></li>
                     </ul>
                 </div>
             </div>
@@ -204,46 +208,45 @@ onMounted(() => {
                 <h3 class="footer-title text-light">Let's Connect</h3>
                 <p class="footer-desc">
                     <div id="fb-root"></div>
-                    <div class="fb-page" :data-href="fbPageUrl" data-tabs="timeline" data-width="" data-height="130" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
-                        <blockquote :cite="fbPageUrl" class="fb-xfbml-parse-ignore">
-                        <a :href="fbPageUrl" target="_blank">{{ title?.value }}</a>
+                    <div class="fb-page" :data-href="`https://www.facebook.com/${facebook?.value}`" data-tabs="timeline" data-width="" data-height="130" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
+                        <blockquote :cite="`https://www.facebook.com/${facebook?.value}`" class="fb-xfbml-parse-ignore">
+                        <a :href="`https://www.facebook.com/${facebook?.value}`">Nittonoton</a>
                         </blockquote>
                     </div>
                 </p>
             </div>
           </div>
-          <div class="row">
-              <div class="col-12">
-                  <div class="footer-bottom">
-                      <p class="text-center footer-copytext">&copy;  2024 {{ title?.value }} </p>
-                  </div>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col-12">
+              <div class="footer-bottom">
+                  <p class="text-center footer-copytext">&copy;  2024 Nittonoton Made By <a class="text-danger" href="http://servicekey.io" target="_blank" rel="noopener noreferrer">Nittonoton Team</a> </p>
               </div>
           </div>
-        </div>
       </div>
     </footer>
   </div>
 </template>
 
+
 <style>
-
-.main-section-footer{
-  background-color: var(--primary);
+.footer-main-section{
+  background-color: var(--primary-color);
+  padding: 10px;
 }
-
 .footer-part{
   background-color: #2c150f;
 }
 
 
 .footer-logo img {
-    width: 100px !important;
+    width: 270px !important;
 }
 
 .footer-copytext a {
-    color: #000000 !important;
+    color: var(--black)!important;
 }
-
 
 @media (max-width: 767px){
 .footer-bottom {
@@ -253,6 +256,17 @@ onMounted(() => {
 @media (max-width: 425px){
   .footer-widget {
      margin-bottom: 2px; 
+}
+.footer-logo img {
+  width: 350px !important;
+}
+}
+@media (max-width: 320px){
+  .footer-widget {
+     margin-bottom: 2px; 
+}
+.footer-logo img {
+  width: 250px !important
 }
 }
 
