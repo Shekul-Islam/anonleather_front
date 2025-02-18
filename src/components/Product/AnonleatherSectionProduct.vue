@@ -81,7 +81,7 @@ onMounted(() => {
 .section-header-text {
   background-color: #f5f6f7;
   padding: 10px 20px;
-  font-size: 28px;
+  font-size: 24px;
   border: 3px solid var(--primary) !important;
   border-top-width: 7px !important;
   border-radius: 15px / 45px !important;

@@ -1,10 +1,12 @@
 <script setup>
-import { TopHeader, Navbar } from '@/components'
+import { TopHeader, Navbar  } from '@/components'
 
 </script>
 <template>
-    <TopHeader />
-    <Navbar />
+    <h1>header.vue</h1>
+    <!-- <CoreDeveloperTopHeader/> -->
+    <!-- <TopHeader /> -->
+    <!-- <Navbar /> -->
 </template>
 
 

@@ -522,7 +522,7 @@ border: 2px solid #119744;
     font-size: 16px !important;
   }
   .product-price span{
-    font-size: 18px !important;
+    font-size: 17px !important;
   }
 }
 

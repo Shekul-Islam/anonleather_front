@@ -11,7 +11,7 @@ const commonIsToggleFunctionality = useCommonIsToggleFunctionality();
 const {  shopSideBar } = storeToRefs(commonIsToggleFunctionality);
 
 const searchBrandQuery = ref("");
-const searchCategoryQuery = ref("");
+const searchCategoryQuery = ref(""); 
 const getAttributeDatas = ref();
 
 const sortingPrice = ref([]);

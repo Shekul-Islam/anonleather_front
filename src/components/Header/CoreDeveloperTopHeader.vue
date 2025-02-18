@@ -1,10 +1,12 @@
 <script setup>
 // All Import File  Code Is Here......................................................................................................
+import { vOnClickOutside } from '@vueuse/components'
 import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useCart, useSetting, useAuth, useCommonIsToggleFunctionality } from "@/stores";
 import axiosInstance from "@/services/axiosService.js";
 import { NavSideBar } from "@/components";
+
 
 // All Variable  Code Is Here.....................................................................................................
 const commonIsToggleFunctionality = useCommonIsToggleFunctionality();
@@ -21,6 +23,7 @@ const primaryColor = ref("#2f5597");
 const secondaryColor = ref("#ffb500");
 const faviconFile = ref("maxfit.png");
 const gtmId = ref("GTM-TMP9GG8Q");
+const topHeaderText = ref("");
 const headerTextOne = ref("");
 const headerTextTwo = ref("");
 const headerTextThree = ref("");
@@ -53,10 +56,13 @@ const getSettingsData = async () => {
   const settingData = await setting.getData('key', 1);
 
   settingData.data.map((ele) => {
+    console.log(settingData);
+    
     if (ele.key == "header_logo") {
       logo.value = ele;
       
     }
+
     // if (ele.key == "primary_color") {
     //   primaryColor.value = ele;
     // }
@@ -64,16 +70,19 @@ const getSettingsData = async () => {
     //   secondaryColor.value = ele;
     // }
     if (ele.key == "favicon_icon") {
-      faviconFile.value = ele;
+      faviconFile.value = ele.value;
+    }
+    if (ele.key == "top_header_text"){
+      topHeaderText.value = ele
     }
     if (ele.key == "header_text_one") {
-      headerTextOne.value = ele;
+      headerTextOne.value = ele.value;
     }
     if (ele.key == "header_text_two") {
-      headerTextTwo.value = ele;
+      headerTextTwo.value = ele.value;
     }
     if (ele.key == "header_text_three") {
-      headerTextThree.value = ele;
+      headerTextThree.value = ele.value;
     }
   });
 };
@@ -212,10 +221,11 @@ onMounted(() => {
 
     <div
       class="marqueTag header-top"
-      v-if="headerTextOne || headerTextTwo || headerTextThree"
+      v-if="headerTextOne || headerTextTwo || headerTextThree || topHeaderText"
     >
       <div class="container d-flex justify-content-between">
         <marquee behavior="" direction="">
+          <span>{{ topHeaderText?.value }}</span>
           <span>{{ headerTextOne?.value }}</span>
           <span>{{ headerTextTwo?.value }}</span>
           <span>{{ headerTextThree?.value }}</span>

@@ -31,11 +31,11 @@ const name                = ref(auth?.user?.user?.name);
 const phoneNumber         = ref(auth?.user?.user?.phone_number);
 const district            = ref("");
 const address             = ref("");
-const payment_gateway_id  = ref(1);
+const payment_gateway_id  = ref(null);
 const delivery_gateway_id = ref(1);
 const deliverCharge       = ref();
 const deliveryInfo        = ref([]);
-const payment_gateways    = ref([]);
+const payment_gateways    = ref({data: []});
 const orderNote           = ref("");
 
 // coupon 
@@ -59,9 +59,9 @@ const paymentGatewayRef   = ref(null);
   const nogod                 = ref('');
   const rocket                = ref('');
   const cod                   = ref('');
-  const paymentGetwayName     = ref('');
-  const paymentSendNumber     = ref();
-  const paymentReceivedNumber = ref();
+  const paymentGetwayName     = ref(null);
+  const paymentSendNumber     = ref('');
+  const paymentReceivedNumber = ref('');
 
     const isOpenCoupon = () =>{
       isOpen.value = !isOpen.value;
@@ -102,8 +102,14 @@ const paymentGatewayRef   = ref(null);
 
     const selectedGetway = (payment_gateway) => {
       payment_gateway_id.value = payment_gateway.id;
+      paymentGetwayName.value = payment_gateway.name
 
-      if (payment_gateway.name === 'Bkash') {
+        // Clear input fields when switching between payment methods
+      paymentSendNumber.value = ''
+      paymentReceivedNumber.value = ''
+      
+
+      if (payment_gateway.name === 'bkash') {
         paymentGetwayName.value = payment_gateway.name;
       }
       if (payment_gateway.name === 'Cash On Delivery') {
@@ -503,6 +509,18 @@ const checkScreenSize = () => {
                       <span class="text-danger" v-if="errors.name">{{ errors.name }}</span>
                     </div>
                     <div class="form-group">
+                        <label for="exampleFormControlTextarea1" class="fw-bold">ঠিকানা:</label>
+                        <Field
+                        name="address"
+                        type="text"
+                        v-model="address"
+                        class="form-control PlaceHolderColorChange"
+                        placeholder="বাসা নং, রোড নং, থানা/উপজেলা, জেলা"
+                        :class="{ 'is-invalid': errors.address }"
+                      />
+                      <span class="text-danger" v-if="errors.address">{{ errors.address }}</span>
+                    </div>
+                    <div class="form-group">
                         <label for="exampleInputPassword1" class="fw-bold">মোবাইল নম্বরঃ</label>
                         <Field
                         name="phone"
@@ -514,18 +532,6 @@ const checkScreenSize = () => {
                       />
                       <span class="text-danger" v-if="errors.phone">{{ errors.phone }}</span>
                       <span class="text-danger" v-if="backendErrors?.phone_number">{{ backendErrors.phone_number[0] }}</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleFormControlTextarea1" class="fw-bold">ঠিকানা:</label>
-                        <Field
-                        name="address"
-                        type="text"
-                        v-model="address"
-                        class="form-control PlaceHolderColorChange"
-                        placeholder="বাসা নং, রোড নং, থানা/উপজেলা, জেলা"
-                        :class="{ 'is-invalid': errors.address }"
-                      />
-                      <span class="text-danger" v-if="errors.address">{{ errors.address }}</span>
                     </div>
                     <h6 class="delivary-charge text-center mb-3" >ডেলিভারি চার্জ</h6>
                     <div  v-for="(delivery, index) in deliveryInfo.data" :key="index"  @click="getSelectedDeliveryId(delivery.id)">
@@ -547,7 +553,8 @@ const checkScreenSize = () => {
                     <div class="">
                       <div class="right-text fw-bolder text-dark text-center"><i class="fa-solid fa-lock"></i>সম্পূর্ণ নিরাপদ পেমেন্ট</div>
                     </div>
-                    <template v-for="(payment_gateway, index) in payment_gateways.data" :key="index">
+
+                    <div v-for="(payment_gateway, index) in payment_gateways.data" :key="index">
                       <div class="formRadioControl d-flex align-items-center"  @click="selectedGetway(payment_gateway)">
                         <input
                           class="form-check-input payment-getway-input me-2 mt-0"
@@ -562,21 +569,23 @@ const checkScreenSize = () => {
                           <img :src="payment_gateway.image" alt="" style="width: 40px;">
                         </div>
                       </div> 
-                      <div class="box box--top" v-if="paymentGetwayName === 'Bkash' && payment_gateway.name === paymentGetwayName">
+
+                      <div class="box box--top" v-if="paymentGetwayName?.toLowerCase() === 'bkash' && payment_gateway.id === payment_gateway_id">
                         <span>
                           <span class="text-danger font-weight-bold">"Upto 300 Taka Discount"</span><br>
                             <span class="text-danger">➞</span> BKash Agent Number : 01873 046 404 <br>
                             <div class="paymentgetway-customize-input-feilds">
-                              <span>bKash Send Number</span>
+                              <span>BKash Send Number</span>
                               <input type="email" class="form-control form-control-sm" placeholder="017XXXXXXXX" v-model="paymentSendNumber">
                             </div>
                             <div class="paymentgetway-customize-input-feilds">
-                              <span>bKash Received Number</span>
+                              <span>BKash Transaction ID</span>
                               <input type="email" class="form-control form-control-sm" placeholder="017XXXXXXXX" v-model="paymentReceivedNumber">
                             </div>
                           </span>
                       </div>
-                      <div class="box box--top" v-else-if="paymentGetwayName === 'Nagad'  && payment_gateway.name === paymentGetwayName">
+
+                      <div class="box box--top"  v-else-if="paymentGetwayName?.toLowerCase() === 'nagad' && payment_gateway.id === payment_gateway_id">
                         <span>
                           <span class="text-danger font-weight-bold">"Upto 300 Taka Discount"</span><br>
                             <span class="text-danger">➞</span> Nagad Agent Number : 01894 689 206 <br>
@@ -585,15 +594,17 @@ const checkScreenSize = () => {
                               <input type="email" class="form-control form-control-sm" placeholder="017XXXXXXXX" v-model="paymentSendNumber">
                             </div>
                             <div class="paymentgetway-customize-input-feilds">
-                              <span>Nagad Received Number</span>
-                              <input type="email" class="form-control form-control-sm" placeholder="017XXXXXXXX" v-model="paymentReceivedNumber">
+                              <span>Nagad Transaction ID</span>
+                              <input type="email" class="form-control form-control-sm" placeholder="9KE6DF5T4M" v-model="paymentReceivedNumber">
                             </div>
                           </span>
                       </div>
-                      <div class="box box--top" v-else-if="paymentGetwayName == 'Cash On Delivery'  &&  payment_gateway.name == paymentGetwayName">
+
+                      <div class="box box--top" v-else-if="paymentGetwayName == 'Cash On Delivery'  &&  payment_gateway.id == payment_gateway_id">
                         <span class="text-danger">➞</span> Pay with cash upon delivery. 
                       </div>
-                    </template>
+                    </div>
+
                     </div>
                     <div class="left my-3 hide_and_show_bottam_section ">
                       <h5 class="text-wrap">Order Summery</h5>
@@ -640,6 +651,19 @@ const checkScreenSize = () => {
 
 <style>
 @import "@/assets/css/checkout.css";
+
+
+
+.box {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #f9f9f9;
+}
+
+.paymentgetway-customize-input-feilds {
+  margin-top: 8px;
+}
 
 /* paymentgetway customize input feilds */
 

@@ -48,6 +48,10 @@ const price         = ref();
 const quantityInput = ref(1);
 const categoryId    = ref([]);
 const setting       = useSetting();
+const { productById } = storeToRefs(product);
+
+
+
 
 // product variations start
 const productVariations     = ref([]);
@@ -78,6 +82,7 @@ const productByid = async () => {
   singleProduct.value = await product.productById(route.params.slug);
   productVariations.value = singleProduct.value?.variations?.attributes;
   categoryId.value.push(singleProduct.value?.category?.id);
+  startCountdown(startDate.value, res.countdown_end_time);
 };
 // get products end
 
@@ -194,6 +199,79 @@ const getPrices = async (sizeI, name) => {
 };
 
 
+// product counter  start
+const startDate = ref("");
+const productTimer = ref(true);
+const date = new Date();
+const year = date.getFullYear();
+const month = (date.getMonth() + 1).toString().padStart(2, '0');
+const day = date.getDate().toString().padStart(2, '0');
+const hours = date.getHours().toString().padStart(2, '0');
+const minutes = date.getMinutes().toString().padStart(2, '0');
+const seconds = date.getSeconds().toString().padStart(2, '0');
+
+startDate.value = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+// product counter end
+
+// product counter start
+
+const time = {
+  days: ref(0),
+  hours: ref(0),
+  minutes: ref(0),
+  seconds: ref(0),
+};
+
+let timer = null;
+
+const padSingleDigit = (num) => {
+  return num < 10 ? `0${num}` : `${num}`;
+}
+
+// Function to parse startDate if it's in a non-standard format
+const parseStartDate = (startDate) => {
+  const parts = startDate.split(/[- :]/);
+  return new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5]);
+};
+
+
+const startCountdown = (startDate, endDate) => {
+    //end Date
+  const targetDate = new Date(endDate).getTime();
+
+    const parsedStartDate = parseStartDate(startDate);
+
+    timer = setInterval(() => {
+    //Start Date
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // Update values with padded single digits without quotes
+    time.days.value = padSingleDigit(days);
+    time.hours.value = padSingleDigit(hours);
+    time.minutes.value = padSingleDigit(minutes);
+    time.seconds.value = padSingleDigit(seconds);
+
+    if (distance < 0) {
+      clearInterval(timer);
+      time.days.value = '00';
+      time.hours.value = '00';
+      time.minutes.value = '00';
+      time.seconds.value = '00';
+
+       productTimer.value = false;
+    }
+  }, 1000);
+};
+
+// product counter end
+
+
 // footer navbar Start
 
 const stickyFooter = () => {
@@ -271,6 +349,8 @@ onMounted(() => {
   getSettingsData();
   stickyFooter();
   productByid();
+  const endDate = '2025-02-20 23:59:59'; // তোমার নির্দিষ্ট static endDate
+  startCountdown(startDate.value, endDate);
 });
 
 </script>
@@ -373,9 +453,10 @@ onMounted(() => {
                   ></a>
                 </li>
               </ul>
-    </div>
-  </div>
-  </div>  
+          </div>
+        </div>
+        </div>  
+
             <div class="col-lg-12 mt-3">
               <!-- <div class="details-list-group">
                 <label class="details-list-title" v-show="socialShares.length > 0"
@@ -389,6 +470,16 @@ onMounted(() => {
                   </li>
                 </ul>
               </div> -->
+
+              <div class="d-md-flex align-items-center m-auto mt-3 mt-lg-0" data-countdown="2021/12/31" v-if="productTimer">
+                  <span class="couter-span-tag d-flex justify-content-center">এই অফারটি শেষ হতে বাকী আর মাত্র  </span>
+                    <div class="d-flex justify-content-center my-4">
+                      <span class="countdown-time"><span>{{ time.days.value }}</span><small>দিন</small></span>
+                      <span class="countdown-time"><span>{{ time.hours.value }}</span><small>ঘন্টা</small></span>
+                      <span class="countdown-time"><span>{{ time.minutes.value }}</span><small>মিনিট</small></span>
+                      <span class="countdown-time"><span>{{ time.seconds.value }}</span><small>সেকেন্ড</small></span>
+                    </div>
+              </div>
     
               
               <div class="details-add-group" v-if="singleProduct?.variations?.data.length > 0">
@@ -422,7 +513,7 @@ onMounted(() => {
                       title="Add to Cart"
                       :disabled="activeBtns === false && selectedSize == null ? true : false"
                       :class="selectedSize == null ? 'disabled' : ''"
-                      @click.prevent="addToCart(singleProduct, quantityInput)"
+                      @click.prevent="addToCart(singleProduct, quantityInput, productVariationData, productVariationPrice, campaignSlug)"
                     >
                       <template v-if="isloading">
                         <beat-loader
@@ -435,10 +526,6 @@ onMounted(() => {
                       <span>কার্টে যোগ করুন</span>
                     </button>
                   </div>
-
-                  
-
-                  
                  
 
                   <div class="col-md-6 mt-2" v-if="activeBtns === false">
@@ -663,7 +750,7 @@ onMounted(() => {
             v-for="(relatedProduct, index) in relatedProducts"
             :key="index"
           >
-            <ProductCard :product="relatedProduct" />
+            <ProductCard :product="relatedProduct"/>
           </div>
         </div>
         <div class="row">
@@ -812,7 +899,7 @@ onMounted(() => {
 
 .section-header-text {
   background-color: #f5f6f7;
-  font-size: 28px;
+  font-size: 24px;
   padding: 10px 20px;
   border: 3px solid var(--primary) !important;
   border-top-width: 7px !important;

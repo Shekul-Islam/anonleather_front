@@ -430,7 +430,6 @@
   .banner-category-list {
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 430px;
   }
   .banner-category-dropdown {
     left: 195px;

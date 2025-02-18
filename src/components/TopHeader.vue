@@ -5,6 +5,7 @@ import { storeToRefs } from "pinia";
 import { useCart, useSetting, useAuth, useCommonIsToggleFunctionality } from "@/stores";
 import axiosInstance from "@/services/axiosService.js";
 import {  NavSideBar } from "@/components";
+import { vOnClickOutside } from '@vueuse/components'
 const commonIsToggleFunctionality = useCommonIsToggleFunctionality();
 
 // All Variable  Code Is Here.....................................................................................................
@@ -58,7 +59,7 @@ const getSettingsData = async () => {
       
   settingData.data.map((ele) => {
     if (ele.key == "header_logo") {
-      logo.value = ele;
+      logo.value = ele.logo;
     }
     // if (ele.key == "primary_color") {
     //   primaryColor.value = ele;
@@ -67,19 +68,19 @@ const getSettingsData = async () => {
     //   secondaryColor.value = ele;
     // }
     if (ele.key == "favicon_icon") {
-      faviconFile.value = ele;
+      faviconFile.value = ele.value;
     }
     if (ele.key == "header_text_one") {
-      headerTextOne.value = ele;
+      headerTextOne.value = ele.value;
     }
     if (ele.key == "header_text_two") {
-      headerTextTwo.value = ele;
+      headerTextTwo.value = ele.value;
     }
     if (ele.key == "header_text_three") {
-      headerTextThree.value = ele;
+      headerTextThree.value = ele.value;
     }
     if (ele.key == "top_header_text") {
-      topHeaderText.value = ele;
+      topHeaderText.value = ele.value;
     }
     if (ele.key == "facebook_id" ) {
       fbPageUrl.value = ele.value
@@ -221,7 +222,7 @@ onMounted(() => {
                 Nav SIDEBAR PART END
         =======================================-->
 
-    <!-- <div
+     <div
       class="marqueTag"
       v-if="headerTextOne || headerTextTwo || headerTextThree"
     >
@@ -232,7 +233,7 @@ onMounted(() => {
           ><span>{{ headerTextThree.value }}</span></marquee
         >
       </div>
-    </div> -->
+    </div> 
 
     <!-- <div class="header-top">
         <div class="container">

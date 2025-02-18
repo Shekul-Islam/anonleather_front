@@ -73,6 +73,7 @@ const cartIncrement = (index) => {
                 <h6>
                   <a href="product-single.html">{{ cart.name }}</a>
                 </h6>
+                
                 <p>
                   Unit Price -
                   <!-- {{ $filters.currencySymbol(cart.offer_price) }} -->
